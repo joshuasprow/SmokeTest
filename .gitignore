@@ -1,0 +1,10 @@
+# mac garbage
+.DS_Store
+
+# binaries and deps
+bin/
+dist/
+obj/
+
+# secrets
+config.json
