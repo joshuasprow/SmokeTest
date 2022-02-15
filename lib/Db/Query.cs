@@ -8,7 +8,11 @@ namespace Db
     {
         public static async Task GetLocations(SqlConnection conn)
         {
-            var cmd = new SqlCommand("execute usp_Location_FindAll;", conn);
+            var stmt = "execute usp_Location_FindAll;";
+
+            Console.WriteLine($"statement: `{stmt}`");
+
+            var cmd = new SqlCommand(stmt, conn);
 
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
@@ -30,16 +34,22 @@ namespace Db
                         reader.GetString(5)
                     );
 
-                    Console.WriteLine(location.ToString());
+                    Console.WriteLine($"  {location}");
 
                     rows++;
                 }
             }
+
+            Console.WriteLine();
         }
 
         public static async Task GetUserStatus(SqlConnection conn)
         {
-            var cmd = new SqlCommand("select UserStatusId, Display, Description from UserStatus;", conn);
+            var stmt = "select UserStatusId, Display, Description from UserStatus;";
+
+            Console.WriteLine($"statement: `{stmt}`");
+
+            var cmd = new SqlCommand(stmt, conn);
 
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
@@ -51,23 +61,30 @@ namespace Db
                         reader.GetString(2)
                     );
 
-                    Console.WriteLine(userStatus);
+                    Console.WriteLine($"  {userStatus}");
                 }
             }
+
+            Console.WriteLine();
         }
 
         public static async Task SmokeTest(SqlConnection conn)
         {
+            Console.WriteLine("checking connection:");
+
             var cmd = new SqlCommand("select cast(1 + $1 as int) as two;", conn);
+
             cmd.Parameters.AddWithValue("one", 1);
 
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    Console.WriteLine("1 + 1 = {0}", reader.GetInt32(0));
+                    Console.WriteLine($"1 + 1 = { reader.GetInt32(0)}");
                 }
             }
+
+            Console.WriteLine();
         }
     }
 }
