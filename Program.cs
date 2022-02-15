@@ -17,10 +17,11 @@ namespace SmokeTest
 
                 await Query.SmokeTest(conn);
                 await Query.GetUserStatus(conn);
+                await Query.GetLocations(conn);
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Console.WriteLine(e.Message);
             }
         }
     }

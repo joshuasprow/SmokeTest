@@ -4,28 +4,39 @@ using System.Threading.Tasks;
 
 namespace Db
 {
-    class UserStatus
-    {
-        public UserStatus(int userStatusId, string display, string description)
-        {
-            UserStatusId = userStatusId;
-            Display = display;
-            Description = description;
-        }
-
-        public int UserStatusId { get; set; }
-        public string Display { get; set; }
-        public string Description { get; set; }
-
-
-        override public string ToString()
-        {
-            return $"[{UserStatusId}] {Display} | {Description}";
-        }
-    }
-
     class Query
     {
+        public static async Task GetLocations(SqlConnection conn)
+        {
+            var cmd = new SqlCommand("execute usp_Location_FindAll;", conn);
+
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                var rows = 0;
+
+                while (await reader.ReadAsync())
+                {
+                    if (rows > 10)
+                    {
+                        return;
+                    }
+
+                    var location = new Location(
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.GetDecimal(3),
+                        reader.GetInt32(4),
+                        reader.GetString(5)
+                    );
+
+                    Console.WriteLine(location.ToString());
+
+                    rows++;
+                }
+            }
+        }
+
         public static async Task GetUserStatus(SqlConnection conn)
         {
             var cmd = new SqlCommand("select UserStatusId, Display, Description from UserStatus;", conn);
@@ -34,13 +45,13 @@ namespace Db
             {
                 while (await reader.ReadAsync())
                 {
-                    var us = new UserStatus(
+                    var userStatus = new UserStatus(
                         reader.GetInt32(0),
                         reader.GetString(1),
                         reader.GetString(2)
                     );
 
-                    Console.WriteLine(us);
+                    Console.WriteLine(userStatus);
                 }
             }
         }
